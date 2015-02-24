@@ -13,6 +13,5 @@
         "psr-4": {"furyfire\\chip8\\": "src/furyfire/chip8"}
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "dev-master"
     }
 }
