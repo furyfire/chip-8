@@ -20,45 +20,46 @@ class Memory
         0xF0, 0x80, 0x80, 0x80, 0xF0, // C
         0xE0, 0x90, 0x90, 0x90, 0xE0, // D
         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-        0xF0, 0x80, 0xF0, 0x80, 0x80
+        0xF0, 0x80, 0xF0, 0x80, 0x80,
     ];
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->renderSprites();
     }
-    
-    
-    
-    private function renderSprites() {
 
+    private function renderSprites()
+    {
         for ($i = 0; $i < count(self::$sprites); $i++) {
             $this->memory[$i] = self::$sprites[$i];
         }
     }
-    
-    public function setMem($offset, $buffer) {
+
+    public function setMem($offset, $buffer)
+    {
         for ($i = 0; $i < count($buffer); $i++) {
             $this->memory[$offset + $i] = $buffer[$i];
         }
     }
-    
-    public function getMemory($offset, $length) {
+
+    public function getMemory($offset, $length)
+    {
         return array_slice($this->memory, $offset, $length);
     }
-    
-    public function getByte($address) {
-        
-        return isset($this->memory[$address]) ? $this->memory[$address] : 0x00 ;
+
+    public function getByte($address)
+    {
+        return isset($this->memory[$address]) ? $this->memory[$address] : 0x00;
     }
-    
-    public function getOpcode(ProgramCounter $pc) {
-        if(isset($this->memory[$pc->get()])  AND isset($this->memory[$pc->get() + 1])) {
+
+    public function getOpcode(ProgramCounter $pc)
+    {
+        if (isset($this->memory[$pc->get()])  and isset($this->memory[$pc->get() + 1])) {
             return $this->memory[$pc->get()] << 8 | $this->memory[$pc->get() + 1];
         } else {
-             echo "Out of range: 0x".dechex($pc->get())."\n";
-             
+            echo "Out of range: 0x".dechex($pc->get())."\n";
+
             return 0x0000;
         }
-        
     }
 }

@@ -3,24 +3,25 @@ namespace furyfire\chip8;
 
 class Instruction
 {
-
     private $instruction;
 
     public function __construct($instruction)
     {
         if (is_int($instruction) and $instruction >= 0 and $instruction <= 0xFFFF) {
             $this->instruction = $instruction;
+
             return;
         }
         throw new Exception("not a 16bit instruction");
     }
-    
+
     public function __toString()
     {
         return "0x".dechex($this->instruction);
     }
 
-    public function getOpcode() {
+    public function getOpcode()
+    {
         return ($this->instruction & 0xF000) >> 12;
     }
     public function getNNN()
@@ -47,5 +48,4 @@ class Instruction
     {
         return ($this->instruction & 0x00F0) >> 4;
     }
-
 }
