@@ -434,6 +434,4 @@ class CHIP8
         //
         $this->pc->step();
     }
-    
-    
 }
