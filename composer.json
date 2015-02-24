@@ -1,0 +1,18 @@
+{
+    "name": "furyfire/chip8",
+    "description": "Description of project CHIP8.",
+    "authors": [
+        {
+            "name": "FuryFire",
+            "email": "mail@furyfi.re"
+        }
+    ],
+    "require": {
+    },
+        "autoload": {
+        "psr-4": {"furyfire\\chip8\\": "src/furyfire/chip8"}
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "dev-master"
+    }
+}
