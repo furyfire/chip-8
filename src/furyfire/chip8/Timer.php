@@ -3,10 +3,10 @@ namespace furyfire\chip8;
 
 class Timer
 {
-   protected $delay;
+    protected $delay;
     protected $sound;
 
-    protected $last_run;
+    protected $lastRun;
     protected $leftovers = 0;
 
     public function __construct()
@@ -44,7 +44,7 @@ class Timer
 
     public function advance()
     {
-        $delta = microtime(true) - $this->last_run + $this->leftovers;
+        $delta = microtime(true) - $this->lastRun + $this->leftovers;
 
         $ticks = $delta*60;
         $this->leftovers = $ticks - floor($ticks);
@@ -61,7 +61,7 @@ class Timer
                 $this->sound = 0;
             }
         }
-       //echo "delay: ".$delta."\n";
-       $this->last_run = microtime(true);
+        //echo "delay: ".$delta."\n";
+        $this->lastRun = microtime(true);
     }
 }

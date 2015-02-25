@@ -29,7 +29,7 @@ class Screen
         return $this->pixels[$x][$y];
     }
 
-    public function setPixel($x, $y, $state = true)
+    public function setPixel($x, $y, $state)
     {
         $x &= 0x3F;
         $y &= 0x1F;
@@ -60,19 +60,24 @@ class Screen
     {
         for ($y = 0; $y < 32; $y += 2) {
             for ($x = 0; $x < 64; $x++) {
-                if ($this->pixels[$x][$y]  and  $this->pixels[$x][$y+1]) {
-                    echo chr(219);
-                } elseif ($this->pixels[$x][$y]  and !$this->pixels[$x][$y+1]) {
-                    echo chr(223);
-                } elseif (!$this->pixels[$x][$y] and  $this->pixels[$x][$y+1]) {
-                    echo chr(220);
-                } elseif (!$this->pixels[$x][$y] and !$this->pixels[$x][$y+1]) {
-                    echo ' ';
-                }
+                echo self::pixels2Ascii($this->pixels[$x][$y], $this->pixels[$x][$y+1]);
             }
             echo "\n";
         }
         $this->updated = false;
+    }
+    
+    private static function pixels2Ascii($top, $bottom)
+    {
+        if ($top && $bottom) {
+            return chr(219);
+        } elseif ($top && ! $bottom) {
+            return chr(223);
+        } elseif (!$top && $bottom) {
+            return chr(220);
+        } elseif (!$top && ! $bottom) {
+            return ' ';
+        }
     }
 
     /**

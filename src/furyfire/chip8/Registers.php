@@ -45,15 +45,23 @@ class Registers
         return $this->I;
     }
 
-    public function setFlag($bool = true)
+    public function flag($condition)
     {
-        if (is_bool($bool)) {
-            $this->V[15] = $bool ? 1 : 0;
-
+        if ($condition) {
+            $this->setFlag();
             return;
         }
+        $this->clrFlag();
+    }
 
-        throw new Exception("Flag can only be set true/false");
+    public function setFlag()
+    {
+        $this->V[15] = 1;
+    }
+    
+    public function clrFlag()
+    {
+        $this->V[15] = 0;
     }
 
     public function debug()

@@ -3,7 +3,7 @@ include "vendor/autoload.php";
 
 use furyfire\chip8\CHIP8;
 
-include "programs.php";
+include "programs/programs.php";
 
 $chip8 = new CHIP8();
 $chip8->loadArray(${$argv[1]});
@@ -15,6 +15,5 @@ while (1) {
         $chip8->getScreen()->renderToAsciiArt();
         $t++;
         //$chip8->getScreen()->renderToImage('screen/'.$t .".png");
-        //usleep(500000);
     }
 }

@@ -37,9 +37,14 @@ class Memory
 
     public function setMem($offset, $buffer)
     {
-        for ($i = 0; $i < count($buffer); $i++) {
-            $this->memory[$offset + $i] = $buffer[$i];
+        if (is_array($buffer)) {
+            for ($i = 0; $i < count($buffer); $i++) {
+                $this->memory[$offset + $i] = $buffer[$i];
+            }
+            return;
         }
+        
+        $this->memory[$offset] = $buffer;
     }
 
     public function getMemory($offset, $length)
@@ -56,10 +61,8 @@ class Memory
     {
         if (isset($this->memory[$pc->get()])  and isset($this->memory[$pc->get() + 1])) {
             return $this->memory[$pc->get()] << 8 | $this->memory[$pc->get() + 1];
-        } else {
-            echo "Out of range: 0x".dechex($pc->get())."\n";
-
-            return 0x0000;
         }
+        echo "Out of range: 0x".dechex($pc->get())."\n";
+        return 0x0000;
     }
 }
