@@ -5,3 +5,4 @@
 \.conflict\~$
 ^composer\.lock$
 ^vendor$
+^apidocs$

@@ -8,8 +8,7 @@ include "programs/programs.php";
 $chip8 = new CHIP8();
 $chip8->loadArray(${$argv[1]});
 $t = 0;
-while (1) {
-    $chip8->step();
+while ($chip8->step()) {
     if ($chip8->getScreen()->updated()) {
         echo "==============\n";
         $chip8->getScreen()->renderToAsciiArt();

@@ -4,25 +4,25 @@ namespace furyfire\chip8;
 class CHIP8 extends CHIP8Instructions
 {
     /**
-     * @var Registers
+     * @var Registers The V and the I registers for the current emulator
      */
     protected $registers;
     /**
-     * @var ProgramCounter
+     * @var ProgramCounter The programcounter object
      */
     protected $pc;
     /**
-     * @var Memory
+     * @var Memory Representation of the CHIP-8 Memory
      */
     protected $memory;
 
     /**
-     * @var Screen
+     * @var Screen The screen object
      */
     protected $screen;
 
     /**
-     * @var Timer
+     * @var Timer Contains the Delay and the Sound timer
      */
     protected $timer;
 
@@ -32,7 +32,12 @@ class CHIP8 extends CHIP8Instructions
     protected $tickCounter = 0;
 
     /**
-     * Create a new CHIP-8 emulator
+     *
+     * @var boolean
+     */
+    protected $running = true;
+    /**
+     * Instance a new CHIP-8 emulator
      */
     public function __construct()
     {
@@ -80,7 +85,7 @@ class CHIP8 extends CHIP8Instructions
     {
         return $this->screen;
     }
-    
+
     /**
      * Advance the emulator one step
      *
@@ -89,7 +94,7 @@ class CHIP8 extends CHIP8Instructions
     public function step()
     {
         $this->timer->advance();
-        $instruction = new Instruction($this->memory->getOpcode($this->pc));
+        $instruction = $this->memory->getInstruction($this->pc);
         $method      = self::$opcodes[$instruction->getOpcode()];
 
         if (!is_callable(array($this, $method))) {
@@ -97,25 +102,31 @@ class CHIP8 extends CHIP8Instructions
         }
         $this->$method($instruction);
         $this->tickCounter++;
+
+        return $this->running;
+    }
+
+    public function end() {
+        $this->running = false;
     }
 
     /**
      * Unrecognized Opcode
      *
-     * @param type $instruction The current instruction
+     * @param Instruction $instruction The current instruction
      * @throws Exception
      */
-    private function invalidOpcode($instruction)
+    private function invalidOpcode(Instruction $instruction)
     {
         throw new Exception("Opcode not supported. ".$instruction);
     }
 
     /**
-     * Format a breakpoint
+     * Format a breakpoint for console output
      */
     public function printBreakpoint()
     {
-        echo "Opcode: 0x".dechex($this->memory->getOpcode($this->pc))."\n";
+        echo "Opcode: ".$this->memory->getInstruction($this->pc->get())."\n";
         echo "Ticks: ".$this->tickCounter."\n";
         echo "PC: 0x".dechex($this->pc->get())."\n";
         echo $this->registers->debug();
@@ -130,7 +141,7 @@ class CHIP8 extends CHIP8Instructions
     public function breakpoint()
     {
         return array(
-            'opcode'    => $this->memory->getOpcode($this->pc),
+            'opcode'    => $this->memory->getInstruction($this->pc->get())->get(),
             'ticks'     => $this->tickCounter,
             'pc'        => $this->pc->get(),
             'registers' => $this->registers->getAll(),

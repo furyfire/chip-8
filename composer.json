@@ -4,13 +4,13 @@
     "authors": [
         {
             "name": "FuryFire",
-            "email": "mail@furyfi.re"
+            "email": "furyfire@hotmail.com"
         }
     ],
     "require": {
     },
         "autoload": {
-        "psr-4": {"furyfire\\chip8\\": "src/furyfire/chip8"}
+        "psr-4": {"furyfire\\chip8\\": "src"}
     },
     "require-dev": {
     }
