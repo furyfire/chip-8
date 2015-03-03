@@ -33,7 +33,7 @@ class ProgramCounter
             return;
         }
 
-        throw new Exception("Invalid address");
+        throw new \InvalidArgumentException("Invalid address");
     }
 
     public function get()

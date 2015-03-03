@@ -12,6 +12,7 @@ while ($state = $chip8->step()) {
     switch ($state) {
         case CHIP8::STATE_ENDED:
             echo "Program ended";
+            die;
             break;
         case CHIP8::STATE_RUNNING:
             if ($chip8->getScreen()->updated()) {

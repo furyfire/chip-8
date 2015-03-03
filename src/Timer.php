@@ -17,10 +17,23 @@ class Timer
         $this->last_run = microtime(true);
     }
 
+    /**
+     * Returns the current value of the delay timer
+     *
+     * @return int Delay timer value
+     */
     public function getDelay()
     {
         return $this->delay;
     }
+
+    /**
+     * Sets the delay timer
+     *
+     * @param type $time 8bit timer value
+     * @return void
+     * @throws \InvalidArgumentException
+     */
     public function setDelay($time)
     {
         if (is_int($time) and $time >= 0 and $time <= 0x1FF) {
@@ -28,20 +41,27 @@ class Timer
 
             return;
         }
-        throw new Exception("Can not set timer");
+        throw new \InvalidArgumentException("Not a valid timer value");
     }
+
+    /**
+     * Sets the sound timer
+     *
+     * @param type $time 8bit timer value
+     * @return void
+     * @throws \InvalidArgumentException
+     */
     public function setSound($time)
     {
         if (is_int($time) and $time >= 0 and $time <= 0x1FF) {
             $this->sound = $time;
         }
+        throw new \InvalidArgumentException("Not a valid sound value");
     }
 
-    public function getSound()
-    {
-        return $this->sound;
-    }
-
+    /**
+     * Advance the buildtin timers according to passed time.
+     */
     public function advance()
     {
         $delta = microtime(true) - $this->lastRun + $this->leftovers;
@@ -61,7 +81,6 @@ class Timer
                 $this->sound = 0;
             }
         }
-        //echo "delay: ".$delta."\n";
         $this->lastRun = microtime(true);
     }
 }

@@ -99,7 +99,7 @@ class Memory
         if (is_int($address) && $address >= 0 && $address <= 0xFFF) {
             return isset($this->memory[$address]) ? $this->memory[$address] : 0x00;
         }
-        throw new \Exception("Out of range: 0x".dechex($address)."\n");
+        throw new \InvalidArgumentException("Out of range: 0x".dechex($address)."\n");
     }
 
     /**

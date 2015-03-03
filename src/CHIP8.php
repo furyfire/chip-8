@@ -116,14 +116,16 @@ class CHIP8 extends CHIP8Instructions
     {
         $this->timer->advance();
 
-        $instruction = $this->memory->getInstruction($this->pc);
-        $method      = self::$opcodes[$instruction->getOpcode()];
+        if ($this->getState() == self::STATE_RUNNING) {
+            $instruction = $this->memory->getInstruction($this->pc);
+            $method      = self::$opcodes[$instruction->getOpcode()];
 
-        if (!is_callable(array($this, $method))) {
-            $this->invalidOpcode($instruction);
+            if (!is_callable(array($this, $method))) {
+                $this->invalidOpcode($instruction);
+            }
+            $this->$method($instruction);
+            $this->tickCounter++;
         }
-        $this->$method($instruction);
-        $this->tickCounter++;
 
         return $this->state;
     }
@@ -143,7 +145,8 @@ class CHIP8 extends CHIP8Instructions
      * Slight hacking to support the Await key instruction
      * @param type $key 1-16
      */
-    public function pressWaitingKey($key) {
+    public function pressWaitingKey($key)
+    {
         $instruction = $this->memory->getInstruction($this->pc);
         $this->registers->setV($instruction->getX(), $key);
         $this->setState(self::STATE_RUNNING);
@@ -153,11 +156,11 @@ class CHIP8 extends CHIP8Instructions
      * Unrecognized Opcode
      *
      * @param Instruction $instruction The current instruction
-     * @throws Exception
+     * @throws \Exception
      */
     private function invalidOpcode(Instruction $instruction)
     {
-        throw new Exception("Opcode not supported. ".$instruction);
+        throw new \Exception("Opcode not supported. ".$instruction);
     }
 
     /**
@@ -165,7 +168,7 @@ class CHIP8 extends CHIP8Instructions
      */
     public function printBreakpoint()
     {
-        echo "Opcode: ".$this->memory->getInstruction($this->pc->get())."\n";
+        echo "Opcode: ".$this->memory->getInstruction($this->pc)."\n";
         echo "Ticks: ".$this->tickCounter."\n";
         echo "PC: 0x".dechex($this->pc->get())."\n";
         echo $this->registers->debug();

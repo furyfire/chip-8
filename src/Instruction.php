@@ -13,7 +13,7 @@ class Instruction
      * @link http://en.wikipedia.org/wiki/CHIP-8#Memory Wikipedia specifications
      * @param int $instruction Binary value of an Instruction
      * @return void
-     * @throws Exception If the supplied value does not fall witin the ranges for a CHIP-8 instruction
+     * @throws \InvalidArgumentException If the supplied value does not fall witin the ranges for a CHIP-8 instruction
      */
     public function __construct($instruction)
     {
@@ -22,7 +22,7 @@ class Instruction
 
             return;
         }
-        throw new Exception("not a 16bit instruction");
+        throw new \InvalidArgumentException("not a 16bit instruction");
     }
 
     /**
@@ -90,7 +90,8 @@ class Instruction
      * Get the current value of the current instruction
      * @return int
      */
-    public function get() {
+    public function get()
+    {
         return $this->instruction;
     }
 }

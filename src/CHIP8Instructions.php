@@ -245,7 +245,7 @@ abstract class CHIP8Instructions
                 $value = $y;
                 $flag  = (bool) ($value & 0x80);
                 $value <<= 1;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), $value & 0xFF);
                 $this->registers->Flag($flag);
                 break;
             default:
@@ -356,12 +356,12 @@ abstract class CHIP8Instructions
         $x = $this->registers->getV($instruction->getX());
         switch ($instruction->getNN()) {
             case 0x9E:
-                if($this->keyboard->getKey($x)) {
+                if ($this->keyboard->getKey($x)) {
                     $this->pc->step();
                 }
                 break;
             case 0xA1:
-                if(!$this->keyboard->getKey($x)) {
+                if (!$this->keyboard->getKey($x)) {
                     $this->pc->step();
                 }
                 break;
