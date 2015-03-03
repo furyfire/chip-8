@@ -3,6 +3,9 @@ namespace furyfire\chip8;
 
 class CHIP8 extends CHIP8Instructions
 {
+    const STATE_ENDED   = 0;
+    const STATE_RUNNING = 1;
+    const STATE_AWAIT   = 2;
     /**
      * @var Registers The V and the I registers for the current emulator
      */
@@ -27,15 +30,20 @@ class CHIP8 extends CHIP8Instructions
     protected $timer;
 
     /**
+     * @var Keyboard Contains the keyboard implementation
+     */
+    protected $keyboard;
+
+    /**
      * @var int Counts the number of ticks the virtual machine performs
      */
     protected $tickCounter = 0;
 
     /**
      *
-     * @var boolean
+     * @var int State of the machine (See STATE_ constants)
      */
-    protected $running = true;
+    protected $state = true;
     /**
      * Instance a new CHIP-8 emulator
      */
@@ -47,6 +55,9 @@ class CHIP8 extends CHIP8Instructions
         $this->screen       = new Screen;
         $this->stack        = new Stack;
         $this->timer        = new Timer;
+        $this->keyboard     = new Keyboard;
+
+        $this->state        = self::STATE_RUNNING;
     }
 
     /**
@@ -87,6 +98,16 @@ class CHIP8 extends CHIP8Instructions
     }
 
     /**
+     * Returns the keyboard object
+     *
+     * @return Keyboard The keyboard object
+     */
+    public function getKeyboard()
+    {
+        return $this->keyboard;
+    }
+
+    /**
      * Advance the emulator one step
      *
      * Calling this function will advance the emulator one step. Usercode must implement the main loop.
@@ -94,6 +115,7 @@ class CHIP8 extends CHIP8Instructions
     public function step()
     {
         $this->timer->advance();
+
         $instruction = $this->memory->getInstruction($this->pc);
         $method      = self::$opcodes[$instruction->getOpcode()];
 
@@ -103,11 +125,28 @@ class CHIP8 extends CHIP8Instructions
         $this->$method($instruction);
         $this->tickCounter++;
 
-        return $this->running;
+        return $this->state;
     }
 
-    public function end() {
-        $this->running = false;
+
+    public function setState($state)
+    {
+        $this->state = $state;
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Slight hacking to support the Await key instruction
+     * @param type $key 1-16
+     */
+    public function pressWaitingKey($key) {
+        $instruction = $this->memory->getInstruction($this->pc);
+        $this->registers->setV($instruction->getX(), $key);
+        $this->setState(self::STATE_RUNNING);
     }
 
     /**

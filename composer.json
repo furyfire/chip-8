@@ -9,8 +9,10 @@
     ],
     "require": {
     },
-        "autoload": {
-        "psr-4": {"furyfire\\chip8\\": "src"}
+    "autoload": {
+        "psr-4": {
+            "furyfire\\chip8\\": "src"
+        }
     },
     "require-dev": {
     }

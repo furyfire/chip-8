@@ -46,7 +46,7 @@ abstract class CHIP8Instructions
     {
         switch ($instruction->getNNN()) {
             case 0x000:
-                $this->end();
+                $this->setState($this::STATE_ENDED);
                 break;
             case 0x0E0:
                 $this->screen->clearScreen();
@@ -353,10 +353,17 @@ abstract class CHIP8Instructions
      */
     protected function iEXxx(Instruction $instruction)
     {
+        $x = $this->registers->getV($instruction->getX());
         switch ($instruction->getNN()) {
             case 0x9E:
+                if($this->keyboard->getKey($x)) {
+                    $this->pc->step();
+                }
                 break;
             case 0xA1:
+                if(!$this->keyboard->getKey($x)) {
+                    $this->pc->step();
+                }
                 break;
             default:
                 $this->InvalidOpcode($instruction);
@@ -410,10 +417,10 @@ abstract class CHIP8Instructions
                 break;
                 break;
             case 0x0A:
-                $this->registers->setV($instruction->getX(), 5);
+                $this->setState($this::STATE_AWAIT);
                 break;
             case 0x15:
-                $this->timer->setDelay($this->registers->getV($instruction->getX()));
+                $this->timer->setDelay($x);
                 break;
             case 0x18:
                 $this->timer->setSound($x);
