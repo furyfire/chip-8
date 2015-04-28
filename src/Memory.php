@@ -49,57 +49,76 @@ class Memory
      */
     private function renderSprites()
     {
-        $this->setMem(0x000, self::$sprites);
+        $this->setMemory(0x000, self::$sprites);
 
     }
 
     /**
      * Sets a specific area of memory
      *
-     * @param int $offset Starting address
-     * @param mixed $buffer A single byte or an array of bytes
+     * @param int $start Starting address
+     * @param mixed $buffer An array of bytes
      */
-    public function setMem($offset, $buffer)
+    public function setMemory($start, $buffer)
     {
-        if (is_array($buffer)) {
-            for ($i = 0; $i < count($buffer); $i++) {
-                $this->memory[$offset + $i] = $buffer[$i];
+        $i = 0;
+        if(is_array($buffer)) {
+            foreach($buffer as $char) {
+                $this->setByte($start + $i, $char);
+                $i++;
             }
-            return;
         }
-
-        $this->memory[$offset] = $buffer;
     }
 
     /**
      * Reads one or serveal bytes from memory
      *
-     * @param type $offset Starting address
+     * @param type $start Starting address
      * @param type $length Number of bytes to read
      * @return array
      *
-     * @todo Check ranges on input
      */
 
-    public function getMemory($offset, $length)
+    public function getMemory($start, $length)
     {
-        return array_slice($this->memory, $offset, $length);
+        $mem = array();
+        for($i = 0; $i < $length; $i++) {
+            $mem[] = getByte($start + $i);
+        }
+        return $mem;
     }
 
     /**
      * Reads a single byte from memory
      *
-     * @param type $address
+     * @param int $address
      * @return int
      *
-     * @todo Preform range check
      */
     public function getByte($address)
     {
-        if (is_int($address) && $address >= 0 && $address <= 0xFFF) {
+        if (Helpers::validateAddress($address)) {
             return isset($this->memory[$address]) ? $this->memory[$address] : 0x00;
         }
         throw new \InvalidArgumentException("Out of range: 0x".dechex($address)."\n");
+    }
+
+    /**
+     * Sets a single byte in memory
+     *
+     * @param int $address Memory address
+     * @param int $value An 8bit value
+     * @return void
+     */
+    public function setByte($address, $value)
+    {
+        if (Helpers::validateAddress($address)) {
+            if (Helpers::validateByte($value)) {
+                $this->memory[$address] = $value;
+                return;
+            }
+        }
+        throw new \InvalidArgumentException("Out of range: 0x" . dechex($address) . "\n");
     }
 
     /**

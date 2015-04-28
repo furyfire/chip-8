@@ -17,9 +17,8 @@ class Instruction
      */
     public function __construct($instruction)
     {
-        if (is_int($instruction) and $instruction >= 0 and $instruction <= 0xFFFF) {
+        if (Helpers::validateInstruction($instruction)) {
             $this->instruction = $instruction;
-
             return;
         }
         throw new \InvalidArgumentException("not a 16bit instruction");

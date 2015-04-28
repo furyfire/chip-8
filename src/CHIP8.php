@@ -3,9 +3,17 @@ namespace furyfire\chip8;
 
 class CHIP8 extends CHIP8Instructions
 {
-    const STATE_ENDED   = 0;
+    const STATE_RESET   = 0;
     const STATE_RUNNING = 1;
     const STATE_AWAIT   = 2;
+    const STATE_TERM    = 3;
+
+
+    /**
+     *
+     * @var Psr\Log\LoggerInterface Logger
+     */
+    protected $logger;
     /**
      * @var Registers The V and the I registers for the current emulator
      */
@@ -43,12 +51,14 @@ class CHIP8 extends CHIP8Instructions
      *
      * @var int State of the machine (See STATE_ constants)
      */
-    protected $state = true;
+    protected $state = self::STATE_RESET;
     /**
      * Instance a new CHIP-8 emulator
      */
-    public function __construct()
+    public function __construct( \Psr\Log\LoggerInterface $logger)
     {
+        $this->logger       = $logger;
+
         $this->memory       = new Memory;
         $this->registers    = new Registers;
         $this->pc           = new ProgramCounter;
@@ -57,7 +67,7 @@ class CHIP8 extends CHIP8Instructions
         $this->timer        = new Timer;
         $this->keyboard     = new Keyboard;
 
-        $this->state        = self::STATE_RUNNING;
+        $this->setState(self::STATE_RESET);
     }
 
     /**
@@ -70,8 +80,13 @@ class CHIP8 extends CHIP8Instructions
      */
     public function loadFile($filename)
     {
+        $this->logger->notice("Loading program from file",array('filename'=>$filename));
+        if(!file_exists($filename)) {
+            $this->logger->critical("File not found",array('filename'=>$filename));
+            throw new Exception("File not found");
+        }
         $program = file_get_contents($filename);
-        $this->memory->setMem(0x200, array_merge(unpack('C*', $program)));
+        $this->memory->setMemory(0x200, array_merge(unpack('C*', $program)));
     }
 
     /**
@@ -84,7 +99,8 @@ class CHIP8 extends CHIP8Instructions
      */
     public function loadArray($array)
     {
-        $this->memory->setMem(0x200, $array);
+        $this->logger->notice("Loading program from array");
+        $this->memory->setMemory(0x200, $array);
     }
 
     /**
@@ -114,6 +130,10 @@ class CHIP8 extends CHIP8Instructions
      */
     public function step()
     {
+        if($this->getState() == self::STATE_RESET) {
+            $this->setState(self::STATE_RUNNING);
+        }
+
         $this->timer->advance();
 
         if ($this->getState() == self::STATE_RUNNING) {
@@ -121,19 +141,32 @@ class CHIP8 extends CHIP8Instructions
             $method      = self::$opcodes[$instruction->getOpcode()];
 
             if (!is_callable(array($this, $method))) {
+
                 $this->invalidOpcode($instruction);
             }
             $this->$method($instruction);
             $this->tickCounter++;
         }
 
-        return $this->state;
+
+        return $this->getState();
     }
 
 
     public function setState($state)
     {
-        $this->state = $state;
+        if($state != $this->state) {
+            switch($state) {
+                case self::STATE_RUNNING:
+                    $this->logger->notice("Program started");
+                    break;
+                case self::STATE_TERM:
+                    $this->logger->notice("Program ended");
+                    break;
+            }
+            $this->logger->info("STATE: $this->state -> $state");
+            $this->state = $state;
+        }
     }
 
     public function getState()
@@ -147,6 +180,7 @@ class CHIP8 extends CHIP8Instructions
      */
     public function pressWaitingKey($key)
     {
+        $this->logger->info("KeyPressed",array($key));
         $instruction = $this->memory->getInstruction($this->pc);
         $this->registers->setV($instruction->getX(), $key);
         $this->setState(self::STATE_RUNNING);
@@ -158,21 +192,19 @@ class CHIP8 extends CHIP8Instructions
      * @param Instruction $instruction The current instruction
      * @throws \Exception
      */
-    private function invalidOpcode(Instruction $instruction)
+    protected function invalidOpcode(Instruction $instruction)
     {
-        throw new \Exception("Opcode not supported. ".$instruction);
+        $msg = "Opcode not supported";
+        $this->logger->critical($msg, $this->breakpoint());
+        throw new \Exception($msg." ".$instruction);
     }
 
     /**
      * Format a breakpoint for console output
      */
-    public function printBreakpoint()
+    public function logBreakpoint()
     {
-        echo "Opcode: ".$this->memory->getInstruction($this->pc)."\n";
-        echo "Ticks: ".$this->tickCounter."\n";
-        echo "PC: 0x".dechex($this->pc->get())."\n";
-        echo $this->registers->debug();
-        echo "\n";
+        $this->logger->info("Breakpoint",$this->breakpoint());
     }
 
     /**
@@ -183,7 +215,7 @@ class CHIP8 extends CHIP8Instructions
     public function breakpoint()
     {
         return array(
-            'opcode'    => $this->memory->getInstruction($this->pc->get())->get(),
+            'opcode'    => $this->memory->getInstruction($this->pc)->get(),
             'ticks'     => $this->tickCounter,
             'pc'        => $this->pc->get(),
             'registers' => $this->registers->getAll(),

@@ -11,16 +11,21 @@ class Screen
         $this->updated = false;
     }
 
+    /**
+     * Clear the screen
+     */
     public function clearScreen()
     {
-        for ($x = 0; $x < 64; $x++) {
-            for ($y = 0; $y < 32; $y++) {
-                $this->pixels[$x][$y] = 0;
-            }
-        }
+        $this->pixels = array_fill(0, 64, array_fill(0,32,0));
         $this->updated = true;
     }
 
+    /**
+     * Return a single pixel value
+     * @param real $x
+     * @param real $y
+     * @return bool
+     */
     public function getPixel($x, $y)
     {
         $x &= 0x3F;
@@ -66,7 +71,7 @@ class Screen
         }
         $this->updated = false;
     }
-    
+
     private static function pixels2Ascii($top, $bottom)
     {
         if ($top && $bottom) {
@@ -101,6 +106,11 @@ class Screen
         $this->updated = false;
     }
 
+    /**
+     * Indicates if any pixels has changed since last step of the emulator
+     *
+     * @return boolean true on update otherwise falls
+     */
     public function updated()
     {
         return $this->updated;

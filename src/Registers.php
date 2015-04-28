@@ -21,7 +21,7 @@ class Registers
      */
     public function getV($index)
     {
-        if (is_int($index) and $index >= 0 and $index <= 15) {
+        if (Helpers::validateRegister($index)) {
             return $this->V[$index];
         }
         throw new \InvalidArgumentException("Invalid register");
@@ -37,7 +37,7 @@ class Registers
      */
     public function setV($index, $value)
     {
-        if (is_int($index) and $index >= 0 and $index <= 15 and $value >= 0 and $value <= 255) {
+        if (Helpers::validateRegister($index) && Helpers::validateByte($value)) {
             $this->V[$index] = $value;
 
             return;

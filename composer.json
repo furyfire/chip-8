@@ -8,6 +8,7 @@
         }
     ],
     "require": {
+        "monolog/monolog": "dev-master"
     },
     "autoload": {
         "psr-4": {

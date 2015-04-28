@@ -6,7 +6,7 @@ class Timer
     protected $delay;
     protected $sound;
 
-    protected $lastRun;
+    protected $lastrun;
     protected $leftovers = 0;
 
     public function __construct()
@@ -14,7 +14,7 @@ class Timer
         $this->delay = 0;
         $this->sound = 0;
 
-        $this->last_run = microtime(true);
+        $this->lastrun = microtime(true);
     }
 
     /**
@@ -36,9 +36,8 @@ class Timer
      */
     public function setDelay($time)
     {
-        if (is_int($time) and $time >= 0 and $time <= 0x1FF) {
+        if (Helpers::validateByte($time)) {
             $this->delay = $time;
-
             return;
         }
         throw new \InvalidArgumentException("Not a valid timer value");
@@ -53,8 +52,9 @@ class Timer
      */
     public function setSound($time)
     {
-        if (is_int($time) and $time >= 0 and $time <= 0x1FF) {
+        if (Helpers::validateByte($time)) {
             $this->sound = $time;
+            return;
         }
         throw new \InvalidArgumentException("Not a valid sound value");
     }
@@ -64,7 +64,7 @@ class Timer
      */
     public function advance()
     {
-        $delta = microtime(true) - $this->lastRun + $this->leftovers;
+        $delta = microtime(true) - $this->lastrun + $this->leftovers;
 
         $ticks = $delta*60;
         $this->leftovers = $ticks - floor($ticks);
@@ -81,6 +81,6 @@ class Timer
                 $this->sound = 0;
             }
         }
-        $this->lastRun = microtime(true);
+        $this->lastrun = microtime(true);
     }
 }

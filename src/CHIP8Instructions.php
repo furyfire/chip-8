@@ -46,7 +46,7 @@ abstract class CHIP8Instructions
     {
         switch ($instruction->getNNN()) {
             case 0x000:
-                $this->setState($this::STATE_ENDED);
+                $this->setState($this::STATE_TERM);
                 break;
             case 0x0E0:
                 $this->screen->clearScreen();
@@ -200,45 +200,45 @@ abstract class CHIP8Instructions
         $y = $this->registers->getV($instruction->getY());
         switch ($instruction->getN()) {
             case 0x0:
-                $this->registers->setV($instruction->getX(), $y);
+                $this->registers->setV($instruction->getX(), (int)$y);
                 break;
             case 0x1:
                 $value = $x || $y;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), (int)$value);
                 break;
             case 0x2:
                 $value = $x && $y;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), (int)$value);
                 break;
             case 0x3:
                 $value = $x xor $y;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), (int)$value);
                 break;
             case 0x4:
                 $value = $x + $y;
                 $value &= 0xFF;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), (int)$value);
                 $this->registers->Flag($value > 255);
                 break;
             case 0x5:
                 $value = $x - $y;
                 $value = ($value < 0) ? 255 - abs($value) : $value;
                 $value &= 0xFF;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), (int)$value);
                 $this->registers->Flag($x >= $y);
                 break;
             case 0x6:
                 $value = $y;
                 $flag  = (bool) ($value & 0x01);
                 $value >>= 1;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), (int)$value);
                 $this->registers->Flag($flag);
                 break;
             case 0x7:
                 $value = $y - $x;
                 $value = ($value < 0) ? 255 - abs($value) : $value;
                 $value &= 0xFF;
-                $this->registers->setV($instruction->getX(), $value);
+                $this->registers->setV($instruction->getX(), (int)$value);
                 $this->registers->Flag($y >= $x);
                 break;
             case 0xE:
@@ -413,7 +413,7 @@ abstract class CHIP8Instructions
         $x = $this->registers->getV($instruction->getX());
         switch ($instruction->getNN()) {
             case 0x07:
-                $this->registers->setV($instruction->getX(), $this->timer->getDelay());
+                $this->registers->setV($instruction->getX(), (int)$this->timer->getDelay());
                 break;
                 break;
             case 0x0A:
@@ -434,9 +434,19 @@ abstract class CHIP8Instructions
                 $value = $x * 5;
                 $this->registers->setI($value & 0x1FF);
                 break;
+            case 0x33:
+                $value = $x;
+
+                $this->memory->setByte($this->registers->getI(), (int)floor($value / 100));
+                $value %= 100;
+                $this->memory->setByte($this->registers->getI() + 1, (int)floor($value / 10));
+                $value %= 10;
+                $this->memory->setByte($this->registers->getI() + 2, (int)$value);
+
+                break;
             case 0x55:
                 for ($i = 0; $i <= $instruction->getX(); $i++) {
-                    $this->memory->setMem($this->registers->getI(), $this->registers->getV($i));
+                    $this->memory->setByte($this->registers->getI(), $this->registers->getV($i));
                     $this->registers->setI($this->registers->getI() + 1);
                 }
                 break;
