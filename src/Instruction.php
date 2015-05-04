@@ -42,7 +42,7 @@ class Instruction
     }
 
     /**
-     * Return the 12 LSB, refered in CHIp-8 specifications as NNN
+     * Return the 12 LSB, refered in CHIP-8 specifications as NNN
      * @return int
      */
     public function getNNN()
@@ -51,7 +51,7 @@ class Instruction
     }
 
     /**
-     * Return the 8 LSB, refered in CHIp-8 specifications as NN
+     * Return the 8 LSB, refered in CHIP-8 specifications as NN
      * @return int
      */
     public function getNN()

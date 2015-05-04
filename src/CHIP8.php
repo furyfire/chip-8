@@ -55,7 +55,7 @@ class CHIP8 extends CHIP8Instructions
     /**
      * Instance a new CHIP-8 emulator
      */
-    public function __construct( \Psr\Log\LoggerInterface $logger)
+    public function __construct(\Psr\Log\LoggerInterface $logger)
     {
         $this->logger       = $logger;
 
@@ -80,10 +80,10 @@ class CHIP8 extends CHIP8Instructions
      */
     public function loadFile($filename)
     {
-        $this->logger->notice("Loading program from file",array('filename'=>$filename));
-        if(!file_exists($filename)) {
-            $this->logger->critical("File not found",array('filename'=>$filename));
-            throw new Exception("File not found");
+        $this->logger->notice("Loading program from file", array('filename'=>$filename));
+        if (!file_exists($filename)) {
+            $this->logger->critical("File not found", array('filename'=>$filename));
+            throw new \Exception("File not found");
         }
         $program = file_get_contents($filename);
         $this->memory->setMemory(0x200, array_merge(unpack('C*', $program)));
@@ -130,7 +130,8 @@ class CHIP8 extends CHIP8Instructions
      */
     public function step()
     {
-        if($this->getState() == self::STATE_RESET) {
+        if ($this->getState() == self::STATE_RESET) {
+            $this->logger->notice("Program started");
             $this->setState(self::STATE_RUNNING);
         }
 
@@ -141,7 +142,6 @@ class CHIP8 extends CHIP8Instructions
             $method      = self::$opcodes[$instruction->getOpcode()];
 
             if (!is_callable(array($this, $method))) {
-
                 $this->invalidOpcode($instruction);
             }
             $this->$method($instruction);
@@ -152,14 +152,10 @@ class CHIP8 extends CHIP8Instructions
         return $this->getState();
     }
 
-
     public function setState($state)
     {
-        if($state != $this->state) {
+        if ($state != $this->state) {
             switch($state) {
-                case self::STATE_RUNNING:
-                    $this->logger->notice("Program started");
-                    break;
                 case self::STATE_TERM:
                     $this->logger->notice("Program ended");
                     break;
@@ -180,7 +176,7 @@ class CHIP8 extends CHIP8Instructions
      */
     public function pressWaitingKey($key)
     {
-        $this->logger->info("KeyPressed",array($key));
+        $this->logger->info("KeyPressed", array($key));
         $instruction = $this->memory->getInstruction($this->pc);
         $this->registers->setV($instruction->getX(), $key);
         $this->setState(self::STATE_RUNNING);
@@ -204,7 +200,7 @@ class CHIP8 extends CHIP8Instructions
      */
     public function logBreakpoint()
     {
-        $this->logger->info("Breakpoint",$this->breakpoint());
+        $this->logger->info("Breakpoint", $this->breakpoint());
     }
 
     /**

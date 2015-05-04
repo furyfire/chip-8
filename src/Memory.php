@@ -9,9 +9,9 @@ namespace furyfire\chip8;
 class Memory
 {
     /**
-     * @var array Memory
+     * @var \SplFixedArray Memory
      */
-    protected $memory = array();
+    protected $memory;
 
     /**
      * @var array The default font sprites
@@ -41,6 +41,7 @@ class Memory
      */
     public function __construct()
     {
+        $this->memory = new \SplFixedArray(10000);
         $this->renderSprites();
     }
 
@@ -62,8 +63,8 @@ class Memory
     public function setMemory($start, $buffer)
     {
         $i = 0;
-        if(is_array($buffer)) {
-            foreach($buffer as $char) {
+        if (is_array($buffer)) {
+            foreach ($buffer as $char) {
                 $this->setByte($start + $i, $char);
                 $i++;
             }
@@ -82,7 +83,7 @@ class Memory
     public function getMemory($start, $length)
     {
         $mem = array();
-        for($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $length; $i++) {
             $mem[] = getByte($start + $i);
         }
         return $mem;

@@ -16,7 +16,7 @@ class Screen
      */
     public function clearScreen()
     {
-        $this->pixels = array_fill(0, 64, array_fill(0,32,0));
+        $this->pixels = array_fill(0, 64, array_fill(0, 32, 0));
         $this->updated = true;
     }
 

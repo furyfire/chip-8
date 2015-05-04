@@ -1,6 +1,7 @@
 {
     "name": "furyfire/chip8",
-    "description": "Description of project CHIP8.",
+    "description": "A very basic Chip-8 emulator",
+    "version": "0.0.1",
     "authors": [
         {
             "name": "FuryFire",
@@ -8,7 +9,10 @@
         }
     ],
     "require": {
-        "monolog/monolog": "dev-master"
+        "monolog/monolog": "dev-master",
+        "symfony/console": "2.8.x-dev",
+        "symfony/monolog-bridge": "2.8.x-dev",
+        "symfony/http-kernel": "2.8.x-dev"
     },
     "autoload": {
         "psr-4": {
