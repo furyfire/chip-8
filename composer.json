@@ -9,16 +9,11 @@
         }
     ],
     "require": {
-        "monolog/monolog": "dev-master",
-        "symfony/console": "2.8.x-dev",
-        "symfony/monolog-bridge": "2.8.x-dev",
-        "symfony/http-kernel": "2.8.x-dev"
+        "monolog/monolog": "dev-master"
     },
     "autoload": {
         "psr-4": {
             "furyfire\\chip8\\": "src"
         }
-    },
-    "require-dev": {
     }
 }

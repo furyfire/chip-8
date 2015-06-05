@@ -42,7 +42,7 @@ class ProgramCounter
     public function jumpTo($address)
     {
         if (Helpers::validateAddress($address)) {
-            $this->pc = $address;
+            $this->pc = $address & (0xFFE);
 
             return;
         }
