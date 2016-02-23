@@ -17,7 +17,7 @@ class Memory
      * @var array The default font sprites
      * @see http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#font Source
      */
-    protected static $sprites = array(
+    static $sprites = array(
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -76,17 +76,22 @@ class Memory
      *
      * @param type $start Starting address
      * @param type $length Number of bytes to read
+     * @throw \Exception Throws an exception if address is out of range
      * @return array
      *
      */
 
     public function getMemory($start, $length)
     {
-        $mem = array();
-        for ($i = 0; $i < $length; $i++) {
-            $mem[] = getByte($start + $i);
+        if (Helpers::validateAddress($start) && Helpers::validateAddress($start + $length)) {
+
+            $mem = array();
+            for ($i = 0; $i < $length; $i++) {
+                $mem[] = $this->getByte($start + $i);
+            }
+            return $mem;
         }
-        return $mem;
+        throw new \Exception("Out of range");
     }
 
     /**

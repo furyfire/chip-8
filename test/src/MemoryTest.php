@@ -32,15 +32,28 @@ class MemoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers furyfire\chip8\Memory::__construct()
+     */
+    public function testConstruct()
+    {
+        $obj = new Memory;
+        $mem = $obj->getMemory(0, sizeof(Memory::$sprites));
+        $this->assertEquals(Memory::$sprites, $mem, "Check object is created and memory is filled with sprite data");
+    }
+    /**
      * @covers furyfire\chip8\Memory::setMemory
-     * @todo   Implement testSetMemory().
      */
     public function testSetMemory()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $testbuf = array(0x01, 0x02, 0x03, 0x04);
+
+        $this->object->setMemory(0x200, array(0,0,0,0));
+        $result = $this->object->getMemory(0x200, 4);
+        $this->assertEquals(array(0,0,0,0), $result, "Adr: 0x200, Length: 0");
+
+        $this->object->setMemory(0x210, $testbuf);
+        $result = $this->object->getMemory(0x210, sizeof($testbuf));
+        $this->assertEquals($testbuf, $result, "Adr: 0x210, Length: 4");
     }
 
     /**
@@ -49,34 +62,37 @@ class MemoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetMemory()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $testbuf = array(0x01, 0x02, 0x03, 0x04);
+
+        $this->object->setMemory(0x200, array(0,0,0,0));
+        $result = $this->object->getMemory(0x200, 4);
+        $this->assertEquals(array(0,0,0,0), $result, "Adr: 0x200, Length: 0");
+
+        $this->object->setMemory(0x210, $testbuf);
+        $result = $this->object->getMemory(0x210, sizeof($testbuf));
+        $this->assertEquals($testbuf, $result, "Adr: 0x210, Length: 4");
     }
 
     /**
      * @covers furyfire\chip8\Memory::getByte
-     * @todo   Implement testGetByte().
      */
     public function testGetByte()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $address = rand(0, 0x1000-1);
+        $this->object->setByte($address, 0x01);
+        $result = $this->object->getByte($address);
+        $this->assertEquals(0x01, $result, "Writing and reading to a random address");
     }
 
     /**
      * @covers furyfire\chip8\Memory::setByte
-     * @todo   Implement testSetByte().
      */
     public function testSetByte()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $address = rand(0, 0x1000-1);
+        $this->object->setByte($address, 0x01);
+        $result = $this->object->getByte($address);
+        $this->assertEquals(0x01, $result, "Writing and reading to a random address");
     }
 
     /**
